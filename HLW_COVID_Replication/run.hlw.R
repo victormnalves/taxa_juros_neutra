@@ -62,8 +62,8 @@ a3.constraint <- -0.0025
 b2.constraint <- 0.25
 
 # Set the start and end dates of the estimation sample (format is c(year,quarter))
-sample.start <- c(2003,1)
-sample.end   <- c(2020,1)
+sample.start <- c(2002,1)
+sample.end   <- c(2023,4)
 
 # Calculate number of quarters to omit in calculating intial parameters through 19q4
 # See COVID-adjustment note for explanation
