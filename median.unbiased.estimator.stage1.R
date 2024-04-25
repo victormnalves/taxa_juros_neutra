@@ -5,15 +5,14 @@
 #              signal-to-noise ratio lambda_g following Stock and Watson (1998).
 #------------------------------------------------------------------------------#
 median.unbiased.estimator.stage1 <- function(series) {
-    message("Running median.unbiased.estimator.stage1...")
     T <- length(series)
     y <- 400 * diff(series)
 
     stat <- rep(T-2*4)
     for (i in 4:(T-5)) {
       xr <- cbind(rep(1, T-1), c(rep(0,i),rep(1,T-i-1)))
-      xi <- solve(t(xr) %*% xr, tol = 0)
-      b  <- solve(t(xr) %*% xr, t(xr) %*% y, tol = 0)
+      xi <- solve(t(xr) %*% xr)
+      b  <- solve(t(xr) %*% xr, t(xr) %*% y)
       s3 <- sum((y-xr%*%b)^2)/(T-2-1)
       stat[i+1-4] = b[2]/sqrt(s3*xi[2,2])
     }
@@ -45,13 +44,13 @@ median.unbiased.estimator.stage1 <- function(series) {
                17.094, 19.423, 21.682, 23.342, 24.920, 28.174, 30.736,
                33.313, 36.109, 39.673, 41.955, 45.056, 48.647, 50.983,
                55.514, 59.278, 61.311, 64.016)
-
+    
     lame <- NA
     lamm <- NA
     lamq <- NA
 
     # Median-unbiased estimator of lambda_g for given values of the test
-    # statistics are obtained using the procedure described in the
+    # statistics are obtained using the procedure described in the 
     # footnote to Stock and Watson (1998) Table 3.
     if (ew <= valew[1]) {
         lame <- 0
@@ -81,9 +80,9 @@ median.unbiased.estimator.stage1 <- function(series) {
         }
     }
     if (is.na(lame) | is.na(lamm) | is.na(lamq)) {
-        message("At least one statistic has an NA value. Check to see if your EW, MW, and/or QLR value is outside of Table 3.")
+        print("At least one statistic has an NA value. Check to see if your EW, MW, and/or QLR value is outside of Table 3.")
     }
-
+    
     stats <- c(ew, mw, qlr)
     lams  <- c(lame, lamm, lamq)
     return(lame/(T-1))

@@ -17,13 +17,13 @@ shiftQuarter <- function(original.start,shift){
 # a two-element vector, where the first element corresponds to the year
 # and the second element corresponds to the quarter.
 # For example, Q12014 must be entered as "c(2014,1)".
-################################################################
+################################################################    
 
 # Leads (positive values of shift)
     if (shift > 0) {
         new.start = c(0,0)
         sum = original.start[2] + shift
-
+    
         # Get the year value
         if (sum <= 4) {
             new.start[1] = original.start[1]
@@ -45,7 +45,7 @@ shiftQuarter <- function(original.start,shift){
     else {
         new.start = c(0,0)
         diff = original.start[2] - abs(shift)
-
+    
         # Get the year value
         if (diff > 0) {
             new.start[1] = original.start[1]
@@ -62,7 +62,7 @@ shiftQuarter <- function(original.start,shift){
             new.start[2] = diff %% 4 + 4
         }
     }
-
+        
 return(new.start)}
 
 
@@ -78,13 +78,13 @@ shiftMonth <- function(original.start,shift){
 # a two-element vector, where the first element corresponds to the year
 # and the second element corresponds to the month.
 # This function is analogous to shiftQuarter().
-################################################################
+################################################################    
 
 # Leads (positive values of shift)
     if (shift > 0) {
         new.start = c(0,0)
         sum = original.start[2] + shift
-
+    
         # Get the year value
         if (sum <= 12) {
             new.start[1] = original.start[1]
@@ -106,7 +106,7 @@ shiftMonth <- function(original.start,shift){
     else {
         new.start = c(0,0)
         diff = original.start[2] - abs(shift)
-
+    
         # Get the year value
         if (diff > 0) {
             new.start[1] = original.start[1]
@@ -123,7 +123,7 @@ shiftMonth <- function(original.start,shift){
             new.start[2] = diff %% 12 + 12
         }
     }
-
+        
 return(new.start)}
 
 
@@ -131,35 +131,34 @@ getFRED <- function(url, freq = "Quarterly") {
 ##########################################################################################
 # This function downloads data from FRED. It returns quarterly data.
 # User must provide the FRED url.
-###########################################################################################
-
-    FREDraw <- readLines(url)
-    # download.file(url, destfile = paste0('FREDtemp.txt'))
-    #
-    # txt.file.name <- paste0(folder,substr(url, regexpr('[a-zA-z0-9]*.txt',url),1000))
-    # if (!file.exists(txt.file.name)){
-    #     # Download the data from FRED
-    #     download.file(url, destfile = paste0(folder,'FREDtemp.txt'))
-    #     system(paste0('wget --no-check-certificate "', url, '"'))
-    #     system(paste('mv',substr(url, regexpr('[a-zA-z0-9]*.txt',url),1000),txt.file.name))
-    # }
-    # FREDraw <- readLines(txt.file.name)
+########################################################################################### 
+    # Download the data from FRED
+    
+    #download.file(url, destfile = 'FREDtemp.txt', method = "wget")
+    #FREDraw <- readLines('FREDtemp.txt')
+    
+    txt.file.name <- paste0("rawData/",substr(url, regexpr('[a-zA-z0-9]*.txt',url),1000))
+    if (!file.exists(txt.file.name)){
+        # Download the data from FRED
+        #download.file(url, destfile = 'FREDtemp.txt', method = "wget")
+        system(paste0('wget --no-check-certificate "', url, '"'))
+        system(paste('mv',substr(url, regexpr('[a-zA-z0-9]*.txt',url),1000),txt.file.name))
+    }
+    FREDraw <- readLines(txt.file.name) 
 
     # Frequency
     freq.FRED <- gsub(' ', '',substr(FREDraw[which(regexpr('Frequency', FREDraw)==1)],
-                                     (nchar('Frequency')+2),100))
+                                     (nchar('Frequency')+2),100))    
 
     # Where does the data start
     datastart = which(gsub(' ', '',FREDraw)=='DATEVALUE') - 2
 
     #data <- read.table('FREDtemp.txt', skip = datastart, header = TRUE)
-    data <- FREDraw
-    data <- read.table(textConnection(data), skip = datastart, header = TRUE)
+    data <- read.table(txt.file.name, skip = datastart, header = TRUE)
 
-    # get starting date
     first.year  <- as.numeric(format(as.Date(data$DATE[1]),'%Y'))
     first.month <- as.numeric(format(as.Date(data$DATE[1]),'%m'))
-
+    
     # Adjust frequency
     if (freq.FRED == 'Quarterly'){
         first.q  <- (first.month-1)/3 + 1
@@ -174,7 +173,7 @@ getFRED <- function(url, freq = "Quarterly") {
     }
 
     return(data.tis)
-}
+} 
 
 
 splice <- function(s1, s2, splice.date, freq) {
@@ -183,7 +182,7 @@ splice <- function(s1, s2, splice.date, freq) {
 # and extended back using the growth rate at the splice.date times series s1
 # The freq argument accepts two values - 'quarterly' and 'monthly' -
 # but it could be modified to take more.
-##########################################################################################
+##########################################################################################    
     t <- splice.date #renaming for convenience
     if (freq == "quarterly" | freq == "Quarterly") {
         t.minus.1 <- shiftQuarter(t,-1)
@@ -202,7 +201,7 @@ splice <- function(s1, s2, splice.date, freq) {
 gradient <- function(f, x, delta = x * 0 + 1.0e-5) {
 ##########################################################################################
 # This function computes the gradient of a function f given a vector input x.
-##########################################################################################
+##########################################################################################   
     g <- x * 0
     for (i in 1:length(x)) {
         x1 <- x

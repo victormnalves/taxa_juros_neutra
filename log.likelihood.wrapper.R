@@ -24,5 +24,5 @@ log.likelihood.wrapper <- function(parameters, y.data, x.data, stage = NA,
   for (n in names(out)) {
       eval(parse(text=paste0(n, "<-out$", n)))
   }
-  return(kalman.log.likelihood(xi.00, P.00, F_matrix, Q, A, H, R, y.data, x.data))
+  return(kalman.log.likelihood(xi.00, P.00, F, Q, A, H, R, y.data, x.data))
 }

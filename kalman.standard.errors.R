@@ -7,9 +7,10 @@
 #              both filter and parameter uncertainty. See footnote 7 in HLW.
 #------------------------------------------------------------------------------#
 kalman.standard.errors <- function(T, states, theta, y.data, x.data, stage,
-                                   lambda.g, lambda.z, xi.00, P.00, niter = niter,
-                                   a3.constraint=NA, b2.constraint=NA) {
-    message('Computing Standard Errors')
+                                   lambda.g, lambda.z, xi.00, P.00, niter = 5000,
+                                   a3.constraint=NA, b2.constraint=NA, sample.end) {
+
+    print('Computing Standard Errors')
 
     # Set a3.constraint to -0.0025 if a constraint is not specified in stage 3
     if (is.na(a3.constraint)) {
@@ -20,13 +21,26 @@ kalman.standard.errors <- function(T, states, theta, y.data, x.data, stage,
         b2.constraint <- 0.025
     }
 
-    message("Standard Error Procedure: a3.constraint")
-    message(a3.constraint)
+    print("Standard Error Procedure: a3.constraint")
+    print(a3.constraint)
 
-    message("Standard Error Procedure: b2.constraint")
-    message(b2.constraint)
+    print("Standard Error Procedure: b2.constraint")
+    print(b2.constraint)
 
-    n.params <- length(theta)
+    # Number of parameters to compute SE
+    # Note: if sample end data is 2020:Q2 or later, compute SE for phi; otherwise, omit
+    # See COVID-adjusted model note
+    start.phi.se <- ti(c(2020,2), tif='quarterly')  # start computing SE for phi in 2020:Q2
+    date.se      <- ti(sample.end, tif='quarterly') # current date in tis format for comparison
+
+    if (date.se >= start.phi.se) {
+      n.params <- length(theta)
+    } else {
+      n.params <- length(theta)-1
+    }
+
+
+    # Number of state variables
     n.state.vars <- length(xi.00)
 
     # Return vector of log likelihood values at each time t
@@ -47,16 +61,16 @@ kalman.standard.errors <- function(T, states, theta, y.data, x.data, stage,
     # Compute information matrix from difference in gradients of the likelihood function
     # from varying theta (parameter vector) values
     likelihood.gradient <- matrix(NA,T,n.params)
-    for (i in 1:n.params){
+    for (i in 1:(n.params)){
         delta   <- max(theta[i]*1e-6, 1e-6)
         d.theta <- theta
         d.theta[i] <- theta[i] + delta
         likelihood.gradient[,i] <-  (log.likelihood.wrapper(d.theta, y.data, x.data, stage = 3,lambda.g=lambda.g, lambda.z=lambda.z, xi.00=xi.00, P.00=P.00)$ll.vec -
                                          log.likelihood.estimated.vector)/delta
     }
-    info <- solve(t(likelihood.gradient) %*% likelihood.gradient, tol = 0) # Information matrix
+    info <- solve(t(likelihood.gradient) %*% likelihood.gradient) # Information matrix
     bse <- sqrt(diag(info))
-    t.stats <- abs(theta) / bse
+    t.stats <- abs(theta[1:(n.params)]) / bse # obtain t-statistics for parameters specified by n.params above
 
     # Smoothed estimates
     g      <- 4 * states$smoothed$xi.tT[,4]
@@ -72,7 +86,7 @@ kalman.standard.errors <- function(T, states, theta, y.data, x.data, stage,
     eigenvectors.info <- eigenstuff.info$vectors # Eigenvectors of information matrix
     # Eigenvectors without a positive first entry are multiplied by -1 to ensure
     # consistency across different versions of R, which choose the sign differently
-    for (l in 1:n.params) {
+    for (l in 1:(n.params)) {
         if (eigenvectors.info[1,l] < 0 ) { eigenvectors.info[,l] <- -eigenvectors.info[,l] }
     }
     eigenvalues.info  <- eigenstuff.info$value # Eigenvalues of information matrix
@@ -91,7 +105,11 @@ kalman.standard.errors <- function(T, states, theta, y.data, x.data, stage,
     # See HLW footnote 7 for description of procedure
     # niter is the number of iterations; we discard draws that violate constraints
     while (good.draws < niter) {
-      theta.i <- (hh %*% rnorm(n.params) + theta)[,1]
+      if (date.se >= start.phi.se) {
+       theta.i <- (hh %*% rnorm(n.params) + theta)[,1]
+     } else {
+       theta.i <- c(hh %*% rnorm(n.params),0) + theta # Prior to 2020:Q1, hold phi constant at its mean through the draws
+     }
       if ( (theta.i[3] <= a3.constraint) & (theta.i[5] >= b2.constraint) & (theta.i[1] + theta.i[2] < 1) ) {
           xi.00.i  <- c(t(hh2 %*% rnorm(n.state.vars) + stin))
           states.i <- kalman.states.wrapper(theta.i, y.data, x.data, stage, lambda.g, lambda.z, xi.00.i, pp1)
@@ -137,8 +155,7 @@ kalman.standard.errors <- function(T, states, theta, y.data, x.data, stage,
     # Order: y*, r*, g
     se <- sqrt(cum1 + cum2)
 
-    #rm(.Random.seed)
-    rm(.Random.seed, envir=.GlobalEnv)
+    rm(.Random.seed)
     return(list("se.mean"=colMeans(se),
                 "se"=se,"t.stats"=t.stats,"bse"=bse,
                 "number.excluded"=excluded.draw.counter,

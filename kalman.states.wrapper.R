@@ -6,6 +6,7 @@
 #------------------------------------------------------------------------------#
 kalman.states.wrapper <- function(parameters, y.data, x.data, stage = NA,
                                   lambda.g=NA, lambda.z=NA, xi.00=NA, P.00=NA){
+
     if (stage == 1) {
         out <- unpack.parameters.stage1(parameters, y.data, x.data,
                                         xi.00, P.00)
@@ -23,7 +24,7 @@ kalman.states.wrapper <- function(parameters, y.data, x.data, stage = NA,
       eval(parse(text=paste0(n, "<-out$", n)))
   }
   T <- dim(y.data)[1]
-  states <- kalman.states(xi.00, P.00, F_matrix, Q, A, H, R, y.data, x.data)
+  states <- kalman.states(xi.00, P.00, F, Q, A, H, R, y.data, x.data)
   if (stage == 1) {
       states$filtered$xi.tt <- states$filtered$xi.tt + cbind(1:T,0:(T-1),-1:(T-2)) * parameters[5]
       states$smoothed$xi.tT <- states$smoothed$xi.tT + cbind(1:T,0:(T-1),-1:(T-2)) * parameters[5]
