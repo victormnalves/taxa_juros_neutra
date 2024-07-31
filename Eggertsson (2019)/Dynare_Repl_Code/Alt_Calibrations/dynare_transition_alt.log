@@ -1,0 +1,27 @@
+Starting Dynare (version 5.3).
+Calling Dynare with arguments: nostrict
+Starting preprocessing of the model file ...
+WARNING: A parameter was used with a lead or a lag in the model block
+WARNING: s56 su56 not used in model block, removed by nostrict command-line option
+Substitution of exo leads: added 41 auxiliary variables and equations.
+Substitution of exo lags: added 113 auxiliary variables and equations.
+Found 475 equation(s).
+Evaluating expressions...done
+Computing static model derivatives (order 1).
+Computing dynamic model derivatives (order 1).
+Processing outputs ...
+done
+Preprocessing completed.
+
+
+Simulation of the perfect foresight model failed!Switching to a homotopy method...
+Iter. 	 | Lambda 	 | status 	 | Max. residual
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1 	 | 0.50000 	 | succeeded 	 | 5.240677e-06
+2 	 | 1.00000 	 | succeeded 	 | 1.578947e-06
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Perfect foresight solution found.
+
+Total computing time : 0h00m38s
+Note: 2 warning(s) encountered in the preprocessor

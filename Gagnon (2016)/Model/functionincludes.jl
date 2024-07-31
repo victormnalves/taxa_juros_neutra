@@ -1,0 +1,16 @@
+include("typedefs.jl");
+include("BG_search_bisection.jl");
+include("calibeta.jl");
+include("calibeta_bisection.jl");
+include("Compute_population.jl");
+include("GE_search.jl");
+include("GE_search_solution.jl");
+include("late_data_start.jl");
+include("matrix_prep.jl");
+include("PE_family_growth_minc.jl");
+include("PE_family_growth_minc_SS.jl");
+include("read_data.jl");
+include("reset_initial_conditions.jl");
+include("set_pars.jl");
+include("set_simpars.jl");
+include("set_targets.jl");

@@ -1,0 +1,51 @@
+
+1970 Counterfactual Theta Statistics
+
+1.Natural Interest Rate........................0.0103
+2.Nom Investment Output........................0.1863
+3.Labor Share...................................66.1676
+4.Debt to income................................0.0419
+5.Bequests to income............................0.0150
+6.Average Return................................21.8444
+7.MPK...........................................0.2200
+
+1970 Steady State Statistics
+
+1.Natural Interest Rate........................0.0139
+2.Nom Investment Output........................0.1999
+3.Labor Share...................................72.4000
+4.Debt to income................................0.0421
+5.Bequests to income............................0.0163
+6.Average Return................................13.8254
+7.MPK...........................................0.2068
+
+Table: Necessary Changes to Achieve Real Rate of 1
+
+1.Total Fertility...............................4.3490
+2.Government Debt...............................2.7903
+3.Borrowing Limit...............................3.7733
+4.Foreign Assets................................-1.3764
+5.Relative Price................................1.7833
+5.Productivity..................................0.0329
+
+2015 Steady State Statistics
+
+1.Natural Interest Rate........................-0.0147
+2.Nom Investment Output.........................0.1590
+3.Labor Share...................................65.9900
+4.Debt to income................................0.0633
+5.Bequests to income............................0.0301
+6.Average Return................................17.8103
+7.MPK...........................................0.1378
+
+Decomposition of Interest Rate Change
+
+1.Total interest change.........................-0.0286.... 100
+2.Productivity Interest Rate Change.............-0.0128.... 045
+3.Population Interest Rate Change...............-0.0136.... 047
+4.Mortality Change..............................-0.0122.... 043
+5.Gov Debt Change................................0.0154.... -54
+6.Labor Share Change............................-0.0033.... 012
+7.Relp Share Change.............................-0.0030.... 010
+7.Dlim Share Change.............................0.0008.... -03
+
